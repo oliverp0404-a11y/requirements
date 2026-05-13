@@ -165,6 +165,7 @@
 
         async function manualTrigger() {
             soundSelect.play().catch(() => {});
+            localStorage.setItem("haveDone", "True");
             document.getElementById('status').style.display = 'block';
             document.querySelector('.btn').innerText = 'SYST_CALIBRATING...';
 
