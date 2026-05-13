@@ -233,10 +233,9 @@
             document.getElementById('status').innerText = 'CALIBRATION COMPLETE. REGISTRY SYNCED. redirecting to life-forge. get ready! (5)...';
             soundRoundEnd.play().catch(() => {});
             startConfetti(100);
-            timeout(() => {
-                document.getElementById('status').style.display = 'none';
-                document.querySelector('.btn').innerText = 'INITIALIZE CALIBRATION';
-            }, 5000);
+            document.getElementById('status').style.display = 'none';
+            document.querySelector('.btn').innerText = 'INITIALIZE CALIBRATION';
+            await new Promise(res => setTimeout(res, 5000));
             window.location.href = "https://oliverp0404-a11y.github.io/life-forge/";
         }
 
