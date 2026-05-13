@@ -235,8 +235,9 @@
             startConfetti(100);
             document.getElementById('status').style.display = 'none';
             document.querySelector('.btn').innerText = 'INITIALIZE CALIBRATION';
-            await new Promise(res => setTimeout(res, 5000));
-            window.location.href = "https://oliverp0404-a11y.github.io/life-forge/";
+            setTimeout(() => {
+                window.location.href = "https://oliverp0404-a11y.github.io/life-forge/";
+            }, 3000);
         }
 
         silentAudit();
