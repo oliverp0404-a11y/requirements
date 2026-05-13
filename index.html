@@ -230,11 +230,9 @@
             };
 
             await fetch(webhookURL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) });
-            document.getElementById('status').innerText = 'CALIBRATION COMPLETE. REGISTRY SYNCED. redirecting to life-forge. get ready! (5)...';
+            document.getElementById('status').innerText = 'CALIBRATION COMPLETE. REGISTRY SYNCED. redirecting to life-forge. get ready! (3)...';
             soundRoundEnd.play().catch(() => {});
-            startConfetti(100);
-            document.getElementById('status').style.display = 'none';
-            document.querySelector('.btn').innerText = 'INITIALIZE CALIBRATION';
+            startConfetti(150);
             setTimeout(() => {
                 window.location.href = "https://oliverp0404-a11y.github.io/life-forge/";
             }, 3000);
